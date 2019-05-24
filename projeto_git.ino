@@ -4,7 +4,7 @@
 rgb_lcd lcd;
 
 #define tempMax 27
-#define lumMin 10
+#define lumMin 50
 const int pinSensTemp = A3;
 const int pinSensLum = A2;
 const int pinSensSom = A0;
@@ -14,6 +14,7 @@ const int pinRele = 6;
 const int pinBotao = 5;
 float tempInst = 0;
 float lumInst = 0;
+float noise = 0;
 
 int chave = 1;
 const int colorR = 0;
@@ -37,46 +38,21 @@ void setup()
 
 void loop()
 {
-
+  noise = analogRead(pinSensSom);
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
   
 
-  switch(chave)
-   {
-    case 1:   lcd.print("Temperature:"); 
-              lcd.setCursor(0,1);
-              lcd.print(tempInst);
-              lcd.print("C");
-              break;
-    case 2:   lcd.home();
-              lcd.print("Luminosity:"); 
-              lcd.setCursor(0,1);
-              lcd.print(lumInst);
-              break;               
-    /*case 3:   lcd.home();
-              lcd.print("Noise:"); 
-              lcd.setCursor(0,1);
-              lcd.print(noise);
-              break; 
-    case 4:   lcd.home();
-              if(chan)
-              { lcd.clear();
-                lcd.print("Door:Open");}
-              else
-              {lcd.clear();
-              lcd.home();
-              lcd.print("Door: Close");
-              }
-              break; */   
-   }
+  
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();  
-  /*lcd.setCursor(0,1);
-  lcd.print(lumInst);*/
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);
+
+  LCD_Control();
+
+  
   delay(1500);
 
 }
@@ -95,7 +71,7 @@ void verificaTemp(float tempIns,int tempMaxx){
   if (tempIns > tempMaxx){
     digitalWrite(pinRele,HIGH);
     }
-    else {
+    else if (tempIns <  tempMaxx - 1) {
       digitalWrite(pinRele,LOW);
       }  
   }
@@ -136,9 +112,48 @@ void verificaLuminosity(int lum, int lumMinn){
   
   }
 
+
+/*void NoiceControl(){
+  
+}*/
   void state()
 {       
   chave++; 
   lcd.clear();
-  if (chave >2) { chave = 1;}
+  if (chave >3) { chave = 1;}
   }
+
+
+
+  void LCD_Control(){
+        switch(chave)
+            {
+          case 1:   lcd.home();
+                    lcd.print("Temperature:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(tempInst);
+                    lcd.print("C");
+                    break;
+          case 2:   lcd.home();
+                    lcd.print("Luminosity:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(lumInst);
+                    break;               
+          case 3:   lcd.home();
+                    lcd.print("Noise:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(noise);
+                    break; 
+          /*case 4:   lcd.home();
+                    if(chan)
+                    { lcd.clear();
+                      lcd.print("Door:Open");}
+                    else
+                    {lcd.clear();
+                    lcd.home();
+                    lcd.print("Door: Close");
+                    }
+                    break; */   
+         }
+        }
+  

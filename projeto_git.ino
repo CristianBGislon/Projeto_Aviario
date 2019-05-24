@@ -1,10 +1,9 @@
-
-
 #include <rgb_lcd.h>
 rgb_lcd lcd;
 
 #define tempMax 27
 #define lumMin 50
+
 const int pinSensTemp = A3;
 const int pinSensLum = A2;
 const int pinSensSom = A0;
@@ -12,14 +11,14 @@ const int pinBuzzer = 4;
 const int pinLed = 7;
 const int pinRele = 6;
 const int pinBotao = 5;
+
 float tempInst = 0;
 float lumInst = 0;
 float noise = 0;
+
 bool ventilador = false;
 int chave = 1;
-const int colorR = 0;
-const int colorG = 255;
-const int colorB = 0;
+const int colorR = 0, colorG = 255, colorB = 0;
 
 void setup()
 {
@@ -39,8 +38,6 @@ void loop()
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
   
-
-  
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();  
   verificaTemp(tempInst,tempMax);
@@ -48,8 +45,6 @@ void loop()
   verificaLuminosity(lumInst, lumMin);
 
   LCD_Control();
-
-  
   delay(1500);
 
 }
@@ -106,21 +101,17 @@ void verificaLuminosity(int lum, int lumMinn){
   if (lum < lumMinn){
     digitalWrite(pinLed,HIGH);    
     }
-   else{
+  else if (lum > lumMinn + 1){
     digitalWrite(pinLed,LOW);
     }
   
   }
 
-
-/*void NoiceControl(){
-  
-}*/
   void state()
-{       
-  chave++; 
-  lcd.clear();
-  if (chave >4) { chave = 1;}
+  {       
+    chave++; 
+    lcd.clear();
+    if (chave > 4) { chave = 1;}
   }
 
 

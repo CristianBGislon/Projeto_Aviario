@@ -17,7 +17,6 @@ float lumInst = 0;
 float noise = 0;
 
 bool ventilador = false;
-bool ArtificialLight = false;
 int chave = 1;
 bool ArtificialLight = false;
 const int colorR = 0, colorG = 255, colorB = 0;
@@ -29,7 +28,6 @@ void setup()
   pinMode(pinRele,OUTPUT);
   pinMode(pinLed,OUTPUT);
   lcd.begin(16,2);  
-  lcd.print("Temperatura:"); 
   lcd.setRGB(colorR, colorG, colorB);
   attachInterrupt(pinBotao, state, RISING);
 }
@@ -39,9 +37,6 @@ void loop()
   noise = analogRead(pinSensSom);
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
-  
-  tempInst = temperature(pinSensTemp);  
-  lumInst = luminosity();  
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);

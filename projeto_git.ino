@@ -74,6 +74,7 @@ void verificaTemp(float tempIns,int tempMaxx){
 void verificaAlarme(float temp,int tempMaxx){
     if (temp > tempMaxx + 2){
       alarm(true,pinBuzzer); 
+      chave = 1;
       lcd.setRGB(255, 0, 0);
     }
     else {

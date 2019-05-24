@@ -142,4 +142,3 @@ void verificaLuminosity(int lum, int lumMinn){
   lcd.clear();
   if (chave >2) { chave = 1;}
   }
-ghk

@@ -19,6 +19,7 @@ float noise = 0;
 bool ventilador = false;
 bool ArtificialLight = false;
 int chave = 1;
+bool ArtificialLight = false;
 const int colorR = 0, colorG = 255, colorB = 0;
 
 void setup()
@@ -147,6 +148,23 @@ void verificaLuminosity(int lum, int lumMinn){
                     {lcd.clear();
                     lcd.home();
                     lcd.print("Ventilador: OFF");
+                    }
+                    break;  
+          case 5:   lcd.home();
+                    if(ArtificialLight)
+                    { 
+                      lcd.clear();
+                      lcd.print("Artificial Light:");
+                      lcd.setCursor(0,1);
+                      lcd.print("ON");
+                      }
+                    else
+                    {
+                      lcd.clear();
+                      lcd.home();
+                      lcd.print("Artificial Light:");
+                      lcd.setCursor(0,1);
+                      lcd.print("OFF");
                     }
                     break;    
          }

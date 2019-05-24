@@ -43,39 +43,16 @@ void loop()
   lumInst = luminosity();
   
 
-  switch(chave)
-   {
-    case 1:   lcd.print("Temperature:"); 
-              lcd.setCursor(0,1);
-              lcd.print(tempInst);
-              lcd.print("C");
-              break;
-    case 2:   lcd.home();
-              lcd.print("Luminosity:"); 
-              lcd.setCursor(0,1);
-              lcd.print(lumInst);
-              break;               
-    case 3:   lcd.home();
-              lcd.print("Noise:"); 
-              lcd.setCursor(0,1);
-              lcd.print(noise);
-              break; 
-    /*case 4:   lcd.home();
-              if(chan)
-              { lcd.clear();
-                lcd.print("Door:Open");}
-              else
-              {lcd.clear();
-              lcd.home();
-              lcd.print("Door: Close");
-              }
-              break; */   
-   }
+  
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();  
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);
+
+  LCD_Control();
+
+  
   delay(1500);
 
 }
@@ -146,4 +123,37 @@ void verificaLuminosity(int lum, int lumMinn){
   if (chave >3) { chave = 1;}
   }
 
+
+
+  void LCD_Control(){
+        switch(chave)
+            {
+          case 1:   lcd.home();
+                    lcd.print("Temperature:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(tempInst);
+                    lcd.print("C");
+                    break;
+          case 2:   lcd.home();
+                    lcd.print("Luminosity:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(lumInst);
+                    break;               
+          case 3:   lcd.home();
+                    lcd.print("Noise:"); 
+                    lcd.setCursor(0,1);
+                    lcd.print(noise);
+                    break; 
+          /*case 4:   lcd.home();
+                    if(chan)
+                    { lcd.clear();
+                      lcd.print("Door:Open");}
+                    else
+                    {lcd.clear();
+                    lcd.home();
+                    lcd.print("Door: Close");
+                    }
+                    break; */   
+         }
+        }
   

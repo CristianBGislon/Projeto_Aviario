@@ -1,10 +1,9 @@
-
-
 #include <rgb_lcd.h>
 rgb_lcd lcd;
 
 #define tempMax 27
 #define lumMin 50
+
 const int pinSensTemp = A3;
 const int pinSensLum = A2;
 const int pinSensSom = A0;
@@ -12,17 +11,15 @@ const int pinBuzzer = 4;
 const int pinLed = 7;
 const int pinRele = 6;
 const int pinBotao = 5;
+
 float tempInst = 0;
 float lumInst = 0;
 float noise = 0;
 
+bool ventilador = false;
 int chave = 1;
-const int colorR = 0;
-const int colorG = 255;
-const int colorB = 0;
-
-
-
+bool ArtificialLight = false;
+const int colorR = 0, colorG = 255, colorB = 0;
 
 void setup()
 {
@@ -31,7 +28,6 @@ void setup()
   pinMode(pinRele,OUTPUT);
   pinMode(pinLed,OUTPUT);
   lcd.begin(16,2);  
-  lcd.print("Temperatura:"); 
   lcd.setRGB(colorR, colorG, colorB);
   attachInterrupt(pinBotao, state, RISING);
 }
@@ -41,18 +37,11 @@ void loop()
   noise = analogRead(pinSensSom);
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
-  
-
-  
-  tempInst = temperature(pinSensTemp);  
-  lumInst = luminosity();  
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);
 
   LCD_Control();
-
-  
   delay(1500);
 
 }
@@ -70,15 +59,19 @@ float temperature(const int pinTemp){
 void verificaTemp(float tempIns,int tempMaxx){
   if (tempIns > tempMaxx){
     digitalWrite(pinRele,HIGH);
+    ventilador = true;
+    
     }
     else if (tempIns <  tempMaxx - 1) {
       digitalWrite(pinRele,LOW);
+      ventilador = false;
       }  
   }
 
 void verificaAlarme(float temp,int tempMaxx){
     if (temp > tempMaxx + 2){
       alarm(true,pinBuzzer); 
+      chave = 1;
       lcd.setRGB(255, 0, 0);
     }
     else {
@@ -106,21 +99,17 @@ void verificaLuminosity(int lum, int lumMinn){
   if (lum < lumMinn){
     digitalWrite(pinLed,HIGH);    
     }
-   else{
+  else if (lum > lumMinn + 1){
     digitalWrite(pinLed,LOW);
     }
   
   }
 
-
-/*void NoiceControl(){
-  
-}*/
   void state()
-{       
-  chave++; 
-  lcd.clear();
-  if (chave >3) { chave = 1;}
+  {       
+    chave++; 
+    lcd.clear();
+    if (chave > 5) { chave = 1;}
   }
 
 
@@ -144,16 +133,35 @@ void verificaLuminosity(int lum, int lumMinn){
                     lcd.setCursor(0,1);
                     lcd.print(noise);
                     break; 
-          /*case 4:   lcd.home();
-                    if(chan)
+
+                    
+          case 4:   lcd.home();
+                    if(ventilador)
                     { lcd.clear();
-                      lcd.print("Door:Open");}
+                      lcd.print("Fan: ON");}
                     else
                     {lcd.clear();
                     lcd.home();
-                    lcd.print("Door: Close");
+                    lcd.print("Fan: OFF");
                     }
-                    break; */   
+                    break;  
+          case 5:   lcd.home();
+                    if(ArtificialLight)
+                    { 
+                      lcd.clear();
+                      lcd.print("Artificial Light:");
+                      lcd.setCursor(0,1);
+                      lcd.print("ON");
+                      }
+                    else
+                    {
+                      lcd.clear();
+                      lcd.home();
+                      lcd.print("Artificial Light:");
+                      lcd.setCursor(0,1);
+                      lcd.print("OFF");
+                    }
+                    break;    
          }
         }
   

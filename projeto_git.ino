@@ -45,7 +45,8 @@ void loop()
 
   switch(chave)
    {
-    case 1:   lcd.print("Temperature:"); 
+    case 1:   lcd.home();
+              lcd.print("Temperature:"); 
               lcd.setCursor(0,1);
               lcd.print(tempInst);
               lcd.print("C");

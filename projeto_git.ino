@@ -17,7 +17,6 @@ float lumInst = 0;
 float noise = 0;
 
 bool ventilador = false;
-bool ArtificialLight = false;
 int chave = 1;
 bool ArtificialLight = false;
 const int colorR = 0, colorG = 255, colorB = 0;

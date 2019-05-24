@@ -15,7 +15,7 @@ const int pinBotao = 5;
 float tempInst = 0;
 float lumInst = 0;
 float noise = 0;
-
+bool ventilador = false;
 int chave = 1;
 const int colorR = 0;
 const int colorG = 255;
@@ -72,9 +72,12 @@ float temperature(const int pinTemp){
 void verificaTemp(float tempIns,int tempMaxx){
   if (tempIns > tempMaxx){
     digitalWrite(pinRele,HIGH);
+    ventilador = true;
+    
     }
     else {
       digitalWrite(pinRele,LOW);
+      ventilador = false;
       }  
   }
 
@@ -122,7 +125,7 @@ void verificaLuminosity(int lum, int lumMinn){
 {       
   chave++; 
   lcd.clear();
-  if (chave >3) { chave = 1;}
+  if (chave >4) { chave = 1;}
   }
 
 
@@ -146,16 +149,18 @@ void verificaLuminosity(int lum, int lumMinn){
                     lcd.setCursor(0,1);
                     lcd.print(noise);
                     break; 
-          /*case 4:   lcd.home();
-                    if(chan)
+
+                    
+          case 4:   lcd.home();
+                    if(ventilador)
                     { lcd.clear();
-                      lcd.print("Door:Open");}
+                      lcd.print("Ventilador: ON");}
                     else
                     {lcd.clear();
                     lcd.home();
-                    lcd.print("Door: Close");
+                    lcd.print("Ventilador: OFF");
                     }
-                    break; */   
+                    break;    
          }
         }
   

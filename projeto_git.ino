@@ -4,7 +4,7 @@
 rgb_lcd lcd;
 
 #define tempMax 27
-#define lumMin 10
+#define lumMin 50
 const int pinSensTemp = A3;
 const int pinSensLum = A2;
 const int pinSensSom = A0;
@@ -14,6 +14,7 @@ const int pinRele = 6;
 const int pinBotao = 5;
 float tempInst = 0;
 float lumInst = 0;
+float noise = 0;
 
 int chave = 1;
 const int colorR = 0;
@@ -37,7 +38,7 @@ void setup()
 
 void loop()
 {
-
+  noise = analogRead(pinSensSom);
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
   
@@ -54,12 +55,12 @@ void loop()
               lcd.setCursor(0,1);
               lcd.print(lumInst);
               break;               
-    /*case 3:   lcd.home();
+    case 3:   lcd.home();
               lcd.print("Noise:"); 
               lcd.setCursor(0,1);
               lcd.print(noise);
               break; 
-    case 4:   lcd.home();
+    /*case 4:   lcd.home();
               if(chan)
               { lcd.clear();
                 lcd.print("Door:Open");}
@@ -136,9 +137,15 @@ void verificaLuminosity(int lum, int lumMinn){
   
   }
 
+
+/*void NoiceControl(){
+  
+}*/
   void state()
 {       
   chave++; 
   lcd.clear();
-  if (chave >2) { chave = 1;}
+  if (chave >3) { chave = 1;}
   }
+
+  

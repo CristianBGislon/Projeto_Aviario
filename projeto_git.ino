@@ -1,3 +1,5 @@
+
+
 #include <rgb_lcd.h>
 rgb_lcd lcd;
 
@@ -138,7 +140,6 @@ void verificaLuminosity(int lum, int lumMinn){
 {       
   chave++; 
   lcd.clear();
-  if (chave ==2) { chave = 1;}
+  if (chave >2) { chave = 1;}
   }
 
-  

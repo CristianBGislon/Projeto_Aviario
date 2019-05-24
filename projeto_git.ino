@@ -73,8 +73,6 @@ void loop()
    }
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();  
-  /*lcd.setCursor(0,1);
-  lcd.print(lumInst);*/
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);
@@ -96,7 +94,7 @@ void verificaTemp(float tempIns,int tempMaxx){
   if (tempIns > tempMaxx){
     digitalWrite(pinRele,HIGH);
     }
-    else {
+    else if (tempIns <  tempMaxx - 1) {
       digitalWrite(pinRele,LOW);
       }  
   }

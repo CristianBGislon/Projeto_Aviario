@@ -154,11 +154,11 @@ void verificaLuminosity(int lum, int lumMinn){
           case 4:   lcd.home();
                     if(ventilador)
                     { lcd.clear();
-                      lcd.print("Ventilador: ON");}
+                      lcd.print("Fan: ON");}
                     else
                     {lcd.clear();
                     lcd.home();
-                    lcd.print("Ventilador: OFF");
+                    lcd.print("Fan: OFF");
                     }
                     break;    
          }

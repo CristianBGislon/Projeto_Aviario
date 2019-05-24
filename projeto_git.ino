@@ -28,7 +28,6 @@ void setup()
   pinMode(pinRele,OUTPUT);
   pinMode(pinLed,OUTPUT);
   lcd.begin(16,2);  
-  lcd.print("Temperatura:"); 
   lcd.setRGB(colorR, colorG, colorB);
   attachInterrupt(pinBotao, state, RISING);
 }
@@ -38,9 +37,6 @@ void loop()
   noise = analogRead(pinSensSom);
   tempInst = temperature(pinSensTemp);  
   lumInst = luminosity();
-  
-  tempInst = temperature(pinSensTemp);  
-  lumInst = luminosity();  
   verificaTemp(tempInst,tempMax);
   verificaAlarme(tempInst,tempMax);
   verificaLuminosity(lumInst, lumMin);

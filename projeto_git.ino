@@ -5,7 +5,7 @@
 rgb_lcd lcd;
 
 #define tempMax 27
-#define lumMin 50
+#define lumMin 30
 
 const int pinSensTemp = A3;
 const int pinSensLum = A2;
@@ -14,10 +14,16 @@ const int pinBuzzer = 4;
 const int pinLed = 7;
 const int pinRele = 6;
 const int pinBotao = 5;
+const int pinTouch= 8;
 
 float tempInst = 0;
 float lumInst = 0;
 float noise = 0;
+float tempInstMax = 0;
+float tempInstMin = 100;
+
+int estado;
+int n = 0;  
 
 bool ventilador = false;
 int chave = 1;
@@ -25,7 +31,7 @@ bool ArtificialLight = false;
 const int colorR = 0, colorG = 255, colorB = 0;
 
 String readString;  
-char SensorTensao[100]; //Utilize esta variavel para receber os valores de saida
+char concatena[100]; //Utilize esta variavel para receber os valores de saida
 
 byte mac[] = {0x98, 0x4F, 0xEE, 0x01, 0xEE, 0x27 };
 IPAddress ip(223,254,242,220);
@@ -84,17 +90,22 @@ void verificaTemp(float tempIns,int tempMaxx){
       }  
   }
 
+
 void verificaAlarme(float temp,int tempMaxx){
-    if (temp > tempMaxx + 2){
+    if (temp > tempMaxx + 2 && n == 0){
       alarm(true,pinBuzzer); 
-      chave = 1;
       lcd.setRGB(255, 0, 0);
+      chave = 1;
     }
     else {
       alarm(false,pinBuzzer); 
       lcd.setRGB(colorR, colorG, colorB);
-      }  
+      } 
+     if (temp < tempMaxx + 2 && n==1){
+      n = 0;
+     }
   }
+
 
 void alarm(boolean activate, const int pinBuzzer){
   if(activate == true){
@@ -113,10 +124,12 @@ float luminosity(){
 
 void verificaLuminosity(int lum, int lumMinn){
   if (lum < lumMinn){
-    digitalWrite(pinLed,HIGH);    
+    digitalWrite(pinLed,HIGH);  
+    ArtificialLight = 1;
     }
   else if (lum > lumMinn + 1){
     digitalWrite(pinLed,LOW);
+    ArtificialLight = 0;
     }
   
   }
@@ -195,11 +208,13 @@ if (cliente)  {
         
         if (c == '\n' && currentLineIsBlank) { 
             //Atualização de valores  (Segundo loop)        
-          noise = analogRead(pinSensSom);
+          noise = map(analogRead(pinSensSom),0,900,0,100);
           tempInst = temperature(pinSensTemp);  
           lumInst = luminosity();
+          touch();
           verificaTemp(tempInst,tempMax);
-          verificaAlarme(tempInst,tempMax);
+          verificaAlarme(tempInst,tempMax);          
+          verificaMaxMin();
           verificaLuminosity(lumInst, lumMin);
           LCD_Control();
           
@@ -225,15 +240,34 @@ if (cliente)  {
         cliente.println("context.lineTo(1000, 300);");
         cliente.println("context.moveTo(0, 400);");
         cliente.println("context.lineTo(1000, 400);");
+          
         cliente.println("context.font = '30px Arial';");
-        sprintf(SensorTensao, "context.fillText('Temperatura Atual: %3.2f C',5,100-10);",tempInst);
-        cliente.println(SensorTensao); 
-        cliente.println("context.fillText('Temperatura Max:',5,200-10);");
-        cliente.println("context.fillText('Temperatura Min:',5,300-10);");
-        cliente.println("context.fillText('Luminosidade Atual:',5,400-10);");
-        //cliente.println("context.strokeText('1V',5,500);");    
+          
+        if (tempInst > tempMax + 2){
+          cliente.println("context.fillStyle = \"red\";");            
+          sprintf(concatena, "context.fillText('Temperatura Atual: %3.2f C',5,100-10);",tempInst);
+          cliente.println(concatena);
+          cliente.println("context.fillStyle = \"black\";");    
+          }
+        else{
+          sprintf(concatena, "context.fillText('Temperatura Atual: %3.2f C',5,100-10);",tempInst);
+          cliente.println(concatena);          
+          }      
+ 
+        sprintf(concatena, "context.fillText('Temperatura Max: %3.2f C',5,200-10);",tempInstMax);
+        cliente.println(concatena);
+        
+        sprintf(concatena, "context.fillText('Temperatura Min: %3.2f C',5,300-10);",tempInstMin);
+        cliente.println(concatena);
+          
+        sprintf(concatena, "context.fillText('Luminosidade Atual: %3.2f %%',5,400-10);",lumInst);
+        cliente.println(concatena);
+
+        sprintf(concatena, "context.fillText('Ruido: %3.2f %%',5,500-10);",noise);
+        cliente.println(concatena);
+          
         cliente.println("context.strokeStyle = 'hsla(444, 0%, 0%, 1)';");
-       cliente.println(" context.stroke();");
+        cliente.println(" context.stroke();");
         
         cliente.println("context.stroke();");
         cliente.println("context.lineWidth = 1;");
@@ -254,22 +288,32 @@ if (cliente)  {
         cliente.println("<BODY bgcolor= \"  #B8B8B8\"> ");
         cliente.println("<body onload='drawPicture();'>");
         cliente.println("<img src = \"https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_UFSC_vertical_extenso.svg\" width  = 150 height = 150> </img>");
-        cliente.println("<H1>Pratica Placa Galileo</H1><hr/><br/><H2>Voltagem</H2><br/>"); 
+        cliente.println("<H1>Aviario Inteligente</H1><hr/><br/>"); 
         cliente.println("<canvas id='example' width='1000' height='500'>");
         cliente.println("There is supposed ");
         cliente.println("</canvas>");
-        cliente.println("<img src = \"http://www.clker.com/cliparts/Z/I/X/s/l/b/fan-hmi-rnng.svg.hi.png\" width  = 150 height = 150> </img>");  
-        //cliente.println("<img src = \"https://thumbs.gfycat.com/BlandCompassionateBoilweevil-size_restricted.gif\" width  = 150 height = 150> </img>");  
- 
-//        sprintf(SensorTensao, "<H1>%d,%d V </H1>",sensorValue2/100 ,sensorValue2%100);
- //       cliente.println(SensorTensao);
+          
+        if(ventilador){
+          cliente.println("<img src = \"http://www.clker.com/cliparts/Z/I/X/s/l/b/fan-hmi-rnng.svg.hi.png\" width  = 150 height = 150> </img>"); 
+        }
+        else{
+          cliente.println("<img src = \"http://www.clker.com/cliparts/c/l/a/A/e/0/fan-hmi-stop.svg.hi.png\" width  = 150 height = 150> </img>");
+        }
+                
+
+       
+        if(ArtificialLight){
+          cliente.println("<img src = \"https://cdn4.iconfinder.com/data/icons/school-education-4/256/Creativity-512.png\" width  = 150 height = 150> </img>"); 
+        }
+        else{
+          cliente.println("<img src = \"https://image.flaticon.com/icons/png/512/8/8823.png\" width  = 150 height = 150> </img>");
+        }     
+  
         
         cliente.println("<br/><br/><br/>");   
-        cliente.println("<p>Intel</p>");  
-        
+        cliente.println("<p>Intel</p>");          
         cliente.println("</body>");
         cliente.println("</html>");        
-          //break;
 
           delay(10);           // Delay de tempo para o servidor
           cliente.stop();     // encerra conexao
@@ -291,4 +335,25 @@ if (cliente)  {
 
   }
 }
+
+void verificaMaxMin(){
+  if (tempInst < tempInstMin ){
+      tempInstMin = tempInst;
+    }
+  if (tempInst > tempInstMax ){
+      tempInstMax = tempInst;
+    }  
+  
+  }
+
+void touch(){
+  estado=digitalRead(pinTouch);
+  if (estado == HIGH && n == 0){
+    n = 1;
+  }
+  if (estado == LOW && n == 0){
+    n=0;
+  }
+}
+
 
